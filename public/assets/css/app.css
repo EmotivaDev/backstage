@@ -1,0 +1,148 @@
+.sidenav {
+    background-color: #fff !important;
+}
+
+.dark-blue {
+    color: #3E62DA;
+    font-size: 25px;
+}
+
+.light-blue {
+    color: #102877;
+    font-size: 25px;
+}
+
+.logo-rivertech {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.dropdown-menu.show {
+    margin-top: 0px !important;
+    inset: auto !important;
+}
+
+.dropdown .dropdown-menu.show {
+    margin-top: 0px !important;
+}
+
+.dropdown:not(.dropdown-hover) .dropdown-menu.show {
+    margin-top: 0px !important;
+}
+
+.bootstrap-select>.dropdown-toggle {
+    margin-bottom: 2px !important;
+}
+
+#map-history {
+    height: 400px;
+    width: 100%;
+}
+
+.noUi-handle {
+    border: 1px solid #1a73e8;
+
+}
+
+.map-card-history {
+    position: absolute;
+    top: 110px;
+    left: 10px;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    min-width: 450px;
+}
+
+
+.bootstrap-select>.dropdown-toggle.bs-placeholder,
+.btn-light:not(:disabled):not(.disabled):active,
+.bootstrap-select>.dropdown-toggle {
+    color: #fff !important;
+    background-image: linear-gradient(195deg, #42424a 0%, #191919 100%) !important;
+}
+
+.btn-info {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #1A73E8;
+    --bs-btn-border-color: #1A73E8;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #1662c5;
+    --bs-btn-hover-border-color: #155cba;
+    --bs-btn-focus-shadow-rgb: 60, 136, 235;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #155cba;
+    --bs-btn-active-border-color: #1456ae;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #1A73E8;
+    --bs-btn-disabled-border-color: #1A73E8;
+}
+.input-group.input-group-dynamic .form-control,
+.input-group.input-group-dynamic .form-control:focus,
+.input-group.input-group-static .form-control,
+.input-group.input-group-static .form-control:focus {
+  background-image: linear-gradient(0deg, #0a0a0a 2px, rgba(156, 39, 176, 0) 0), linear-gradient(0deg, #d2d2d2 1px, hsla(0, 0%, 82%, 0) 0)  !important;
+  border-radius: 0 !important;
+}
+
+.navbar-vertical .navbar-nav>.nav-item .nav-link.active+.collapse .nav-item.active .nav-link.active, .navbar-vertical .navbar-nav>.nav-item .nav-link.active+.collapsing .nav-item.active .nav-link.active {
+    background-image: linear-gradient(195deg, #1A73E8 0%, #1A73E8 100%);
+}
+
+.custom-active .nav-link.active {
+    color: #fff !important;
+    background-image: linear-gradient(195deg, #1A73E8 0%, #1A73E8 100%);
+}
+
+.navbar-vertical .navbar-nav .nav-link {
+
+    font-size: 0.875rem !important;
+    font-weight: 300 !important;
+}
+
+/* .nav-link {
+    color: #26262691 !important;
+} */
+.navbar-vertical .navbar-nav .nav-link .material-symbols-rounded {
+    font-size: 24px !important;
+    color: black !important;
+}
+
+.navbar-vertical .navbar-nav>.nav-item.clps .nav-link.active {
+    color: white !important;
+    background-color: rgba(199, 199, 199, 0.2);
+   
+}
+.navbar-vertical .navbar-nav>.nav-item .nav-link.active {
+    color: white !important;
+    background-color: #1A73E8;
+}
+
+.input-group.input-group-dynamic.is-focused label,
+.input-group.input-group-static.is-focused label {
+  color: black !important;
+}
+
+.input-group.input-group-outline.is-focused .form-label+.form-control,
+.input-group.input-group-outline.is-filled .form-label+.form-control {
+  border-color: black !important;
+  border-top-color: transparent !important;
+  box-shadow: inset 1px 0 black, inset -1px 0 black, inset 0 -1px black;
+}
+
+.input-group.input-group-outline.is-focused .form-label,
+.input-group.input-group-outline.is-filled .form-label {
+  width: 100%;
+  height: 100%;
+  font-size: 0.6875rem !important;
+  color: black;
+  display: flex;
+  line-height: 1.25 !important;
+}
+
+.input-group.input-group-outline.is-focused .form-label:before, .input-group.input-group-outline.is-focused .form-label:after, .input-group.input-group-outline.is-filled .form-label:before, .input-group.input-group-outline.is-filled .form-label:after {
+    border-top-color: #0a0a0a;
+    box-shadow: inset 0 1px #0a0a0a;
+}

@@ -1,0 +1,537 @@
+/*****************************/
+
+.label-search-bar {
+    font-size: 0.675rem !important;
+}
+
+.device-tracker-menu {
+
+    /* margin: 20px auto; */
+    border-radius: 10px;
+    padding: 5px;
+    overflow: hidden;
+}
+
+
+.d-flex {
+    margin-top: 0px !important;
+}
+
+
+
+.accordion-body {
+    border-radius: 10px;
+    background-color: #ffffff;
+    padding: 5px;
+}
+
+
+
+.device-card {
+    background-color: #ffffff;
+    border: none;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    padding: 10px;
+    color: #000000;
+    transition: background-color 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.device-card:hover {
+    background-color: #f0f0f0;
+}
+
+.badge-live {
+    background-color: #f0ad4e;
+    color: #000000;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-size: 11px;
+    margin-left: 5px;
+}
+
+.device-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.device-info>* {
+    display: flex;
+    align-items: center;
+}
+
+.device-number {
+    font-size: 12px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.device-code {
+    color: #339537;
+    background-color: #bce2be;
+    padding: 3px 6px;
+    border-radius: 3px;
+    margin-right: 5px;
+    font-size: 11px;
+    font-weight: bold;
+
+}
+
+.device-model {
+
+    padding: 3px 6px;
+    border-radius: 3px;
+    margin-right: 5px;
+    font-size: 10px;
+    font-weight: bold;
+
+}
+
+.device-location {
+    color: black;
+    font-size: 12px;
+}
+
+.user-count {
+    font-size: 14px;
+    font-weight: bold;
+    color: #1a73e9;
+}
+
+.scrollable-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.scrollable-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-list::-webkit-scrollbar-track {
+    background-color: #2c2f33;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+    background-color: #1a73e9;
+    border-radius: 4px;
+}
+
+.icon {
+    margin-right: 5px;
+}
+
+.accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.accordion-header .arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.device-accordion-button.collapsed .arrow-icon {
+    transform: rotate(0deg);
+}
+
+.device-accordion-button:not(.collapsed) .arrow-icon {
+    transform: rotate(180deg);
+}
+
+.div-button-arrow-bottom{
+    text-align: center;
+}
+
+.device-accordion-button-two {
+    color: #fff;
+    --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;
+}
+
+.device-accordion-button-two.collapsed .arrow-icon-two {
+    transform: rotate(180deg);
+}
+
+.device-accordion-button-two:not(.collapsed) .arrow-icon-two {
+    transform: rotate(0deg);
+}
+
+.device-card div:nth-child(2) {
+    margin-top: 3px !important;
+}
+
+.search-bar {
+    padding: 8px 10px;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    width: 100%;
+    background-color: #0000001a !important;
+    color: black;
+    font-size: 14px;
+    border: 2px solid #0a0a0a !important;
+}
+
+.search-bar:focus {
+    outline: none;
+    background-color: #2f323714;
+}
+
+/*****************************/
+
+
+
+.title-nav {
+    font-size: 9px !important;
+    padding: 5px 7px 5px 7px !important;
+}
+
+.title-nav-two {
+    font-size: 11px !important;
+    padding: 2px 5px 2px 5px !important;
+}
+
+.title-card {
+    font-weight: 450;
+    font-size: 12px;
+    margin: 0px 0px 5px;
+}
+
+.div-devices {
+    border-radius: 10px;
+    z-index: 1;
+    display: block;
+    position: fixed;
+    width: 100%;
+    max-width: 18rem !important;
+    overflow-y: auto;
+    padding: 0;
+    box-shadow: none;
+}
+
+.color-opacity {
+    background-color: #ffffff5c !important;
+}
+
+.color-black {
+    color: black !important;
+}
+
+.navbar .sidenav-toggler-inner .sidenav-toggler-line {
+    background: #0a0a0a;
+}
+
+.col-bordered {
+    border: 1px solid #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.col-bordered-engines {
+    border: 1px solid #728aa8;
+}
+
+.img-container {
+    margin-left: 5px;
+    width: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.img-fluid-custom {
+    width: 100%;
+    height: 50%;
+}
+
+.accordion-header-navigation {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.div-navigation {
+    margin-right: 1rem !important;
+    z-index: 1;
+    display: block;
+    position: fixed;
+    width: 100%;
+    max-width: 31rem !important;
+    overflow-y: auto;
+    padding: 0;
+    bottom: 0;
+    box-shadow: none;
+}
+
+.panel-navigation-menu {
+    margin-right: 1.5rem !important;
+    /* margin: 20px auto; */
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    overflow: hidden;
+}
+
+
+/* *****************************************/
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+#map-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#nav_engines {
+    display: none;
+}
+
+#nav_engines.show {
+    display: block;
+}
+
+/* *******************************************/
+
+
+#container-bar {
+    z-index: 1;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin-right: 1rem !important;
+    align-items: center;
+    margin-bottom: 0.5rem !important;
+    display: flex;
+    flex-direction: column;
+    /* Default vertical layout */
+}
+
+/* The bar styling */
+.color-bar {
+    width: 30px;
+    /* Default vertical width */
+    height: 320px;
+    /* Default vertical height */
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px;
+    display: flex;
+    flex-direction: column;
+    /* Default vertical layout */
+}
+
+/* Segment styling */
+.segment {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: white;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+.segment-0 {
+    background-color: #f15c5c;
+}
+
+.segment-1 {
+    background-color: #ffa869;
+    color: black;
+}
+
+.segment-2 {
+    background-color: #f8ff78;
+    color: black;
+}
+
+.segment-3 {
+    background-color: #b2b04e;
+}
+
+.segment-4 {
+    background-color: #6ba143;
+}
+
+.segment-5 {
+    background-color: #007a5e;
+}
+
+.segment-6 {
+    background-color: #0b4c6b;
+}
+
+.segment-7 {
+    background-color: #301e6a;
+}
+
+.segment-8 {
+    background-color: #301e6a;
+}
+
+
+@media screen and (max-width: 545px) {
+
+    #container-bar {
+        display: none;
+    }
+
+}
+
+@media screen and (max-width: 447px) {
+
+    .title-nav {
+        font-size: 0.4rem !important;
+        padding: 0.5rem 0.4rem !important; 
+        height: auto; 
+    }
+
+    .title-nav-two {
+        font-size: 0.5rem !important;
+        padding: 0.5rem 0.4rem !important;
+        height: auto;
+    }
+   
+}
+
+
+
+
+/* *******************************************/
+
+
+.div-buttons {
+    z-index: 1;
+    display: block;
+    position: fixed;
+    margin-right: 0.4rem !important;
+    max-width: 3rem !important;
+
+    right: 0;
+    box-shadow: none;
+}
+
+.buttons-tracker-menu {
+
+    /* margin: 20px auto; */
+    border-radius: 10px;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.button-custom {
+    z-index: 1;
+    display: block;
+    position: fixed;
+    right: 0;
+}
+
+.collapse-horizontal {
+    right: 0;
+    margin-right: 5rem !important;
+    position: fixed;
+    overflow: hidden;
+    /* Para que el contenido no sobresalga */
+    transform-origin: right;
+    /* Cambiar el origen de la animación a la derecha */
+    transition: transform 0.3s ease;
+    /* Transición para la animación de la expansión */
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+    .collapsing.collapse-horizontal {
+        transition: none;
+        /* Si el usuario tiene activado el modo de movimiento reducido, no usar animación */
+    }
+}
+
+
+/* *******************************************/
+
+.custom-collapse-toggle {
+    --bs-btn-padding-x: 0rem;
+}
+
+@media screen and (max-width: 482px) {
+
+    .col-name-device {
+        display: flex;
+        align-items: center;
+        height: 33px !important;
+
+    }
+
+    .button-panel-voyage-plan {
+        padding-top: 1px !important;
+    }
+
+}
+
+
+@media screen and (min-width: 482px) {
+    .button-panel-voyage-plan {
+        padding-top: 0px !important;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .button-panel-voyage-plan {
+        padding-top: 1px !important;
+    }
+}
+
+.description-card {
+    font-size: 0.7rem;
+
+}
+
+/******* realtime ****/
+
+.device-card {
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 1px solid #dee2e654 !important;
+}
+
+.device-card.selected {
+    background-color: #0a0a0a1c;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+
+.device-card:hover {
+    background-color: #f0f0f0;
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+    color: #e5e5e5 !important;
+    background-color: #1A73E8 !important;
+    border-color: var(--bs-nav-tabs-link-active-border-color) !important;
+}
+.navbar-vertical .navbar-nav .nav-link.active .material-symbols-rounded {
+    font-size: 24px !important;
+    color: #f0f0f0 !important;
+}
+.nav-link {
+    color: #262626 !important;
+}
