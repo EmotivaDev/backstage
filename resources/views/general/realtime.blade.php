@@ -652,7 +652,7 @@
 
     <div class="collapse collapse-buttons collapse-horizontal" id="collapseWidthExample">
         <div class="card card-body" style="width: 300px;">
-            This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.
+           Hola
         </div>
     </div>
     <div class="collapse collapse-buttons collapse-horizontal" id="collapseWidthExample2">
