@@ -652,7 +652,7 @@
 
     <div class="collapse collapse-buttons collapse-horizontal" id="collapseWidthExample">
         <div class="card card-body" style="width: 300px;">
-           Hola
+           Hola asa
         </div>
     </div>
     <div class="collapse collapse-buttons collapse-horizontal" id="collapseWidthExample2">
