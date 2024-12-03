@@ -19,13 +19,29 @@ const collapseElement = document.getElementById('collapseOne');
 
 inputSearchBar.addEventListener('click', function () {
     if (inputSearchBar.value.trim() === "" && !collapseElement.classList.contains('show')) {
-        console.log('a')
         $('#collapseOne').collapse();
     }else if(inputSearchBar.value.trim() === "" && collapseElement.classList.contains('show')){
-        console.log('ola')
         $('#collapseOne').collapse();
     }
 });
+
+function filterCardsLayer() {
+   
+    let input, filter, cards, cardContainer, title, i, txtValue;
+    input = document.getElementById('searchBarLayer');
+    filter = input.value.toLowerCase();
+    cardContainer = document.getElementById("deviceListLayer");
+    cards = cardContainer.getElementsByClassName('device-card-layer');
+     console.log('ola')
+    for (i = 0; i < cards.length; i++) {
+        title = cards[i].textContent || cards[i].innerText;
+        if (title.toLowerCase().indexOf(filter) > -1) {
+            cards[i].style.display = "";
+        } else {
+            cards[i].style.display = "none";
+        }
+    }
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     /* For Collapses Buttons Layers Right */

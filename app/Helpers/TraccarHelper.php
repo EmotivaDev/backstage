@@ -56,6 +56,43 @@ class TraccarHelper
         return $result;
     }
 
+    public function getLastRecordForEachDevice()
+    {
+        $result = null;
+        try {
+            $devices = $this->getDevicesTraccar();
+            $dateFrom = Carbon::now()->subMinutes(60)->format('Y-m-d\TH:i:s\Z');
+            $dateTo = Carbon::now()->format('Y-m-d\TH:i:s\Z');
+            $dataPositions = [];
+
+            foreach ($devices as $device) {
+                $positions = [];
+                $url = $this->url  . '/api/positions?deviceId=' . $device['id'] . '&from=' . $dateFrom . '&to=' . $dateTo;
+
+                $response = Http::withBasicAuth($this->root, $this->password)
+                    ->withHeaders(['Content-Type' => 'application/json'])
+                    ->timeout(30)
+                    ->get($url);
+                $result = $this->handleResponse($response);
+                foreach ($result as $data) {
+                    $positions[] = [
+                        'attributes' => $data['attributes'],
+                        'date' => $data['deviceTime'],
+                        'lat' => $data['latitude'],
+                        'lng' => $data['longitude'],
+                        'speed' => round($data['speed'] * 1.852, 2),
+                    ];
+                }
+                $dataPositions[$device['id']] = $positions;
+            }
+            $result = $dataPositions;
+        } catch (\Exception $e) {
+            Log::error('Traccar Error ', ['exception' => $e->getMessage()]);
+        }
+        return $result;
+    }
+
+
     public function createUser($name, $email, $password)
     {
         $result = null;

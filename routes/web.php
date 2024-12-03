@@ -29,7 +29,21 @@ Route::middleware('auth')->group(function () {
     Route::put('trip/update/{device}', [TripController::class, 'update'])->name('trip.update');
     Route::delete('trip/{device}', [TripController::class, 'finish'])->name('trip.update');
     Route::get('trip/{device}', [TripController::class, 'show'])->name('trip.show');
-    
+
+
+    Route::get('trails', [RealtimeController::class, 'trails'])->name('trails.select');
+
+    Route::post('trails', [RealtimeController::class, 'uploadTrail'])->name('trails.upload');
+
+    Route::post('trails/{trail}', [RealtimeController::class, 'destroyTrail'])->name('trails.delete');
+
+    Route::post('geofence', [RealtimeController::class, 'createGeofence'])->name('geofence');
+
+    Route::get('geofence', [RealtimeController::class, 'selectGeofence'])->name('geofence.select');
+
+    Route::post('geofences/{geofence}', [RealtimeController::class, 'destroyGeofence'])->name('trails.delete');
+
+
 
     // Routes for controller MyprofileController
     Route::get('myprofile', [MyprofileController::class, 'index'])->name('myprofile');

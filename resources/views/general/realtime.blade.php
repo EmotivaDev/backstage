@@ -33,8 +33,8 @@
 
     <div class="div-navigation border-radius-lg mb-2">
         <div class="div-button-arrow-bottom">
-            <button class="device-accordion-button-two btn btn-icon btn-3 btn-info mb-1 " type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+            <button class="device-accordion-button-two btn btn-icon btn-3 btn-info mb-1 " type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
                 <i class="material-symbols-rounded arrow-icon-two">arrow_downward</i>
             </button>
         </div>
@@ -135,7 +135,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="col-4 col-lg-4 col-bordered p-0">
                                             <div class="row">
                                                 <div class="col-3">
@@ -624,56 +623,217 @@
     </div>
 
     <div class="row div-buttons">
-        <!-- Botón 1 -->
         <button class="btn btn-info w-80 mb-2 custom-collapse-toggle" type="button"
-            data-bs-target="#collapseWidthExample">
+            data-bs-target="#collapseDevicesList" data-bs-toggle="tooltip" data-bs-trigger="hover"
+            data-bs-placement="left" title="Devices">
+            <span class="btn-inner--icon"><i class="material-symbols-rounded">directions_boat</i></span>
+        </button>
+        <button class="btn btn-info w-80 mb-2 custom-collapse-toggle" type="button" data-bs-target="#collapseLayers"
+            data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="left" title="Layers">
             <span class="btn-inner--icon"><i class="material-symbols-rounded">layers</i></span>
         </button>
-        <!-- Botón 2 -->
-        <button class="btn btn-info w-80 mb-2 custom-collapse-toggle" type="button"
-            data-bs-target="#collapseWidthExample2">
-            <span class="btn-inner--icon"><i class="material-symbols-rounded">play_arrow</i></span>
+        <button class="btn btn-info w-80 mb-2 custom-collapse-toggle" type="button" data-bs-target="#collapseTracks"
+            data-bs-toggle="tooltip" data-bs-trigger="hover"" data-bs-placement="left" title="Tracks">
+            <span class="btn-inner--icon"><i class="material-symbols-rounded">stacked_line_chart</i></span>
         </button>
-        <!-- Botón 3 -->
-        <button class="btn btn-info w-80 mb-2 custom-collapse-toggle" type="button"
-            data-bs-target="#collapseWidthExample3">
-            <span class="btn-inner--icon"><i class="material-symbols-rounded">play_arrow</i></span>
-        </button>
-        <!-- Botón 4 -->
-        <button class="btn btn-info w-80 mb-2 custom-collapse-toggle" type="button"
-            data-bs-target="#collapseWidthExample4">
-            <span class="btn-inner--icon"><i class="material-symbols-rounded">play_arrow</i></span>
-        </button>
-        <button class="btn btn-info w-80 mb-2 custom-collapse-toggle" type="button"
-            data-bs-target="#collapseWidthExample4">
-            <span class="btn-inner--icon"><i class="material-symbols-rounded">play_arrow</i></span>
+        <button class="btn btn-info w-80 mb-2 custom-collapse-toggle" type="button" data-bs-target="#collapseGeofences"
+            data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="left" title="Geofences">
+            <span class="btn-inner--icon"><i class="material-symbols-rounded">crop</i></span>
         </button>
     </div>
 
-    <div class="collapse collapse-buttons collapse-horizontal" id="collapseWidthExample">
+    <div class="collapse collapse-buttons collapse-horizontal" id="collapseDevicesList">
         <div class="card card-body" style="width: 300px;">
-           Hola asa
+            <div class="container">
+                <div class="col-md-6 d-flex align-items-center pb-2">
+                    <i class="material-symbols-rounded me-2">directions_boat</i>
+                    <small class="font-weight-bold text-dark">Devices</small>
+                </div>
+                <div class="row">
+                    <div class="input-group input-group-outline flex-grow-1">
+                        <label class="form-label label-search-bar">Search Device</label>
+                        <input type="text" class="search-bar form-control form-control-sm m-0 " id="searchBarLayer"
+                            oninput="filterCardsLayer()">
+                    </div>
+                    <div class="scrollable-list-layer" id="deviceListLayer">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="collapse collapse-buttons collapse-horizontal" id="collapseWidthExample2">
+    <div class="collapse collapse-buttons collapse-horizontal" id="collapseLayers">
         <div class="card card-body" style="width: 300px;">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate ratione eligendi et quam sed sapiente nam
-            rerum.
+            <div class="container">
+                <div class="col-md-6 d-flex align-items-center pb-2">
+                    <i class="material-symbols-rounded me-2">layers</i>
+                    <small class="font-weight-bold text-dark">{{ trans('labels.texts.layers') }}</small>
+                </div>
+                <div class="row ">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch ps-0">
+                            <input class="form-check-input ms-auto me-2 mt-2" type="checkbox" id="checkbox_ais" checked>
+                            <label class="form-check-label">
+                                {{ ucwords(substr(trans('labels.texts.ais'), 0, 10)) }}
+                            </label>
+                        </div>
+                        <div class="form-check form-switch ps-0">
+                            <input class="form-check-input ms-auto me-2 mt-2" type="checkbox" id="checkbox_enc">
+                            <label class="form-check-label">
+                                {{ ucwords(substr(trans('labels.texts.enc'), 0, 10)) }}
+                            </label>
+                        </div>
+                        <div class="form-check form-switch ps-0">
+                            <input class="form-check-input ms-auto me-2 mt-2" type="checkbox"
+                                id="checkbox_cellular_coverage">
+                            <label class="form-check-label">
+                                {{ ucwords(substr(trans('labels.texts.cellular_coverage'), 0, 9)) }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch ps-0">
+                            <input class="form-check-input ms-auto me-2 mt-2" type="checkbox" id="checkbox_ideam"
+                                checked>
+                            <label class="form-check-label">
+                                {{ ucwords(substr(trans('labels.texts.ideam'), 0, 10)) }}
+                            </label>
+                        </div>
+                        <div class="form-check form-switch ps-0">
+                            <input class="form-check-input ms-auto me-2 mt-2" type="checkbox" id="checkbox_mile" checked>
+                            <label class="form-check-label">
+                                {{ ucwords(substr(trans('labels.texts.mile'), 0, 10)) }}
+                            </label>
+                        </div>
+
+                        <div class="form-check form-switch ps-0">
+                            <input class="form-check-input ms-auto me-2 mt-2" type="checkbox"
+                                id="checkbox_points_attention" checked>
+                            <label class="form-check-label">
+                                {{ ucwords(substr(trans('labels.texts.points_attention'), 0, 8)) }}
+                            </label>
+                        </div>
+                    </div>
+                    {{-- <form class="align-items-center">
+                        <div class="input-group input-group-outline d-flex">
+                            <label class="form-label">{{ ucwords(substr(trans('labels.texts.fuel'), 0, 10)) }}</label>
+                            <input type="text" class="form-control">
+                            <button class="btn btn-icon btn-2 bg-gradient-info mb-0">
+                                <i class="material-symbols-rounded">send</i>
+                            </button>
+                        </div>
+                    </form> --}}
+                </div>
+            </div>
         </div>
     </div>
-    <div class="collapse collapse-buttons collapse-horizontal" id="collapseWidthExample3">
+    <div class="collapse collapse-buttons collapse-horizontal" id="collapseTracks">
         <div class="card card-body" style="width: 300px;">
-            ola
+            <div class="container">
+                <div class="col-md-6 d-flex  align-items-center pb-2">
+                    <i class="material-symbols-rounded me-2">stacked_line_chart</i>
+                    <small class="font-weight-bold text-dark">Tracks</small>
+                </div>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    @csrf
+                    <div class="row text-center">
+                        <div class="pb-2">
+                            <input type="file" name="gpx_file" id="gpx_file">
+                        </div>
+                        <div class="pb-2">
+                            <button class="btn btn-sm bg-gradient-dark ms-auto mb-0" type="button"
+                                onclick="uploadFile()">Upload</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-flush" id="tracks-list1">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>@lang('labels.texts.name')</th>
+                                <th>@lang('labels.texts.actions')</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>@lang('labels.texts.name')</th>
+                                <th>@lang('labels.texts.actions')</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="collapse collapse-buttons collapse-horizontal" id="collapseWidthExample4">
+    <div class="collapse collapse-buttons collapse-horizontal" id="collapseGeofences">
         <div class="card card-body" style="width: 300px;">
-            This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.
-        </div>
-    </div>
-    <div class="collapse collapse-buttons collapse-horizontal" id="collapseWidthExample5">
-        <div class="card card-body" style="width: 300px;">
-            This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.
+            <div class="container">
+                <form method="POST" id="formGeofence">
+                    @csrf
+                    <div class="col-md-6 d-flex  align-items-center pb-2">
+                        <i class="material-symbols-rounded me-2">crop</i>
+                        <small class="font-weight-bold text-dark">Geofences</small>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-group input-group-static">
+                                <label style="margin-bottom: 2px">{{ trans('labels.texts.name') }}*</label>
+                                <input type="text" class="form-control py-0" name="name" id="name_geofence">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group input-group-static">
+                                <label style="margin-bottom: 2px">{{ trans('labels.texts.description') }}</label>
+                                <input type="text" class="form-control py-0" name="description"
+                                    id="name_description">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <label class="mb-0 ms-0 pt-1">Type Geofence*</label>
+                            <select class="selectpicker" name="geofence" id="select-geofence" data-size="3"
+                                data-width="100%" placeholder="Choose" data-live-search="true">
+                                <option value="POLYGON" selected>Polygon</option>
+                                <option value="POLYLINE">PoLyline</option>
+                            </select>
+                            @error('geofence')
+                                <div class="text-danger ms-1"><small> {{ $message }}</small></div>
+                            @enderror
+                        </div>
+                    </div>
+                    <p class="text-xs mb-1 mt-2">@lang('labels.texts.fields_required')</p>
+                    <div class="button-row d-flex ">
+                        <a class="btn btn-sm bg-gradient-light mb-0 js-btn-prev" title="Cancel"
+                            id="cancelButton">Cancel</a>
+                        <button class="btn btn-sm bg-gradient-dark ms-auto mb-0 js-btn-next" type="button"
+                            title="Add" id="activatePolygonButton">Add</button>
+                        <button class="btn btn-info btn-sm ms-auto mb-0 js-btn-next" type="button" title="save"
+                            onclick="saveButton()">Save</button>
+                    </div>
+                </form>
+                <div class="table-responsive pt-3">
+                    <table class="table table-flush" id="tracks-list2">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>@lang('labels.texts.name')</th>
+                                <th>@lang('labels.texts.description')</th>
+                                <th>@lang('labels.texts.actions')</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>@lang('labels.texts.name')</th>
+                                <th>@lang('labels.texts.description')</th>
+                                <th>@lang('labels.texts.actions')</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -858,7 +1018,8 @@
                                                     id="choices-update_origin-trip" data-size="3" data-width="100%"
                                                     placeholder="Choose" data-live-search="true">
                                                     @foreach ($reverseGeocodes as $key => $value)
-                                                        <option value="{{ $value->location }} - {{ $value->milemark }}">
+                                                        <option
+                                                            value="{{ $value->location }} - {{ $value->milemark }}">
                                                             {{ strtoupper($value->location) }} -
                                                             {{ strtoupper($value->milemark) }}</option>
                                                     @endforeach
@@ -876,7 +1037,8 @@
                                                     id="choices-update_destination-trip" data-size="3" data-width="100%"
                                                     placeholder="Choose" data-live-search="true">
                                                     @foreach ($reverseGeocodes as $key => $value)
-                                                        <option value="{{ $value->location }} - {{ $value->milemark }}">
+                                                        <option
+                                                            value="{{ $value->location }} - {{ $value->milemark }}">
                                                             {{ strtoupper($value->location) }} -
                                                             {{ strtoupper($value->milemark) }}</option>
                                                     @endforeach
@@ -988,8 +1150,256 @@
         var timeZone = "{{ auth()->user()->time_zone }}";
         var listReverseGeocodes = {!! json_encode($reverseGeocodes) !!};
         var listTrips = {!! json_encode($trips) !!};
+        var PositionsLog = {!! json_encode($PositionsLog) !!};
+        var geofence_url = "{{ route('geofence') }}";
+        var geofence_url_select = "{{ route('geofence.select') }}";
     </script>
+    <script src="{{ asset('template/assets/js/plugins/datatables.js') }}"></script>
     <script src="{{ asset('assets/js/realtime/general.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('template/assets/js/plugins/markerclusterer.js') }}"></script>
     <script src="{{ asset('assets/js/realtime/realtime.js') }}?v={{ time() }}"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAix0yyPzjmXVKm0sDyXZqhyWG882tnKL0&libraries=drawing&callback=initMap"></script>
-@endsection
+
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key={{ env('KEY_MAP') }}&libraries=drawing&callback=initMap">
+    </script>
+
+    <script>
+        // var table = new simpleDatatables.DataTable("#tracks-list1");
+        var checkboxes;
+        var dataTableSearchtrack1;
+        var dataTableSearchtrack2;
+        var trails;
+
+        function uploadFile(params) {
+
+            var formData = new FormData();
+            var fileField = $('#gpx_file')[0].files[0];
+
+            // Verificar si se seleccionó un archivo
+            if (!fileField) {
+                alert('Por favor selecciona un archivo GPX.');
+                return;
+            }
+
+            formData.append('file', fileField);
+
+            // Realizar la solicitud AJAX
+            $.ajax({
+                url: '{{ route('trails.upload') }}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (dataTableSearchtrack1) {
+                        dataTableSearchtrack1.destroy();
+                        dataTableSearchtrack1 = null;
+                    }
+                    createTable();
+
+
+                },
+                error: function(xhr, status, error) {
+
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+
+        document.querySelector('#tracks-list1').addEventListener('click', function(event) {
+            if (event.target.classList.contains("btn-delete")) {
+                var tr = event.target.closest('tr');
+                var cells = tr.querySelectorAll('td');
+                let id = cells[0].querySelector('input').id.replace(/^TrackCheck/, '');
+                $.ajax({
+                    url: `/trails/${parseInt(id)}`,
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response == true) {
+                            if (dataTableSearchtrack1) {
+                                dataTableSearchtrack1.destroy();
+                                dataTableSearchtrack1 = null;
+                            }
+                            createTable();
+                            tripToast("Tracker Deleted", "success", "check");
+                        } else {
+                            console.log(response)
+                            tripToast(response.message, "danger", "campaign");
+                        }
+                    }
+                });
+            }
+            if (event.target.classList.contains('my-checkbox')) {
+                let checkbox = document.getElementById(event.target.id);
+
+                let id = checkbox.id.replace(/^TrackCheck/, '');
+                let trail = trails.find(trail => trail.id === parseInt(id));
+
+                if (checkbox.checked) {
+                    cargarKML(trail);
+                } else {
+                    quitarKML();
+                }
+            }
+            // if (event.target.classList.contains('btn-delete')) {
+            //     const row = event.target.closest('tr'); // Encuentra la fila correspondiente
+            //     if (row) {
+            //         // Elimina la fila de la tabla
+            //         dataTableSearchtrack1.rows().remove(row);
+            //     }
+            // }
+        });
+
+
+
+        document.querySelector('#tracks-list2').addEventListener('click', function(event) {
+
+            if (event.target.classList.contains("btn-delete")) {
+
+                // var tr = event.target.closest('tr');
+                // var cells = tr.querySelectorAll('td');
+                // console.log(cells)
+                // console.log( cells[2].querySelector('label'))
+                // let id = cells[2].querySelector('label').id.replace(/^GeofenceItem/, '');
+                const itemId = event.target.id;
+
+
+                const extractedId = itemId.replace('GeofenceItem', '');
+
+                $.ajax({
+                    url: `/geofences/${parseInt(extractedId)}`,
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response == true) {
+                            if (dataTableSearchtrack2) {
+                                dataTableSearchtrack2.destroy();
+                                dataTableSearchtrack2 = null;
+                            }
+                            clearGeofences()
+                            createTableGeofence();
+                            tripToast("Geofence Deleted", "success", "check");
+                        } else {
+                            console.log(response)
+                            tripToast(response.message, "danger", "campaign");
+                        }
+                    }
+                });
+            }
+
+        });
+
+        function createTable() {
+            $.ajax({
+                url: '{{ route('trails.select') }}',
+                type: 'GET',
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+
+                    trails = response;
+
+                    const newDataArray = response.map(item => ({
+                        "Name": `
+                                        <div class="d-flex">
+                        <div class="form-check my-auto">
+                            <input class="form-check-input my-checkbox" type="checkbox" id="TrackCheck${item.id}">
+                        </div>
+                        <label class="ms-3 my-auto name-label" data-bs-toggle="tooltip" title="${item.name.toUpperCase()} - ${item.created_at}" style="cursor: pointer">
+                            ${item.name.length > 15 ? item.name.substring(0, 15).toUpperCase() + '...' : item.name.toUpperCase()}
+                        </label>
+                    </div>`,
+
+                        "Actions": `
+          <div class="text-center">
+        <a href="#" data-bs-toggle="tooltip" title="Delete" class="ext-center">
+            <i class="material-symbols-rounded text-secondary position-relative text-lg btn-delete">delete</i>
+        </a> </div>`
+                    }));
+
+                    dataTableSearchtrack1 = new simpleDatatables.DataTable("#tracks-list1", {
+                        searchable: true,
+
+                        perPage: 3,
+                    });
+
+                    dataTableSearchtrack1.insert(newDataArray);
+
+                },
+                error: function(xhr, status, error) {
+
+                    console.error(xhr.responseText);
+                }
+            });
+
+
+        }
+
+
+        function createTableGeofence() {
+
+            $.ajax({
+                url: '{{ route('geofence.select') }}',
+                type: 'GET',
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+
+                    const formatText = (text) => {
+                        if (text && text.length > 0) {
+                            return text.length > 15 ? text.substring(0, 15).toUpperCase() + '...' : text
+                                .toUpperCase();
+                        }
+                        return '';
+                    };
+
+                    const newDataArray = response.map(item => ({
+                        "Name": `
+                                     
+                        <label class="ms-3 my-auto name-label" >
+                            ${item.name.length > 15 ? item.name.substring(0, 15).toUpperCase() + '...' : item.name.toUpperCase()}
+                        </label>
+                    `,
+                        "Description": `
+                        <label class="ms-3 my-auto name-label" >
+                             ${formatText(item.description)}
+                        </label>
+                    `,
+
+                        "Actions": `
+                         <div class="text-center">
+        <a href="#" data-bs-toggle="tooltip" title="Delete" >
+            <i class="material-symbols-rounded text-secondary position-relative text-lg btn-delete" id="GeofenceItem${item.id}">delete</i>
+        </a> </div>`
+                    }));
+
+                    dataTableSearchtrack2 = new simpleDatatables.DataTable("#tracks-list2", {
+                        searchable: true,
+
+                        perPage: 3,
+                    });
+                    dataTableSearchtrack2.insert(newDataArray);
+                    drawGeofence(response);
+                },
+                error: function(xhr, status, error) {
+
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+    </script>
+    @endsection

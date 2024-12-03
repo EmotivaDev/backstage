@@ -185,6 +185,6 @@
     </div>
     <script src="{{ asset('template/assets/js/plugins/flatpickr.min.js') }}"></script>
     <script src="{{ asset('template/assets/js/plugins/nouislider.min.js') }}"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAix0yyPzjmXVKm0sDyXZqhyWG882tnKL0&libraries=drawing&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ env('KEY_MAP') }}&libraries=drawing&callback=initMap"></script>
     <script src="{{ asset('assets/js/history.js') }}"></script>
 @endsection

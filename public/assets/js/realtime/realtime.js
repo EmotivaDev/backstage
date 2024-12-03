@@ -13,13 +13,74 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false
     });
+    const drawingManager = new google.maps.drawing.DrawingManager({
+        drawingMode: null,
+        drawingControl: true,
+        drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: [
+                google.maps.drawing.OverlayType.MARKER,
+                google.maps.drawing.OverlayType.CIRCLE,
+                google.maps.drawing.OverlayType.POLYGON,
+                google.maps.drawing.OverlayType.POLYLINE,
+                google.maps.drawing.OverlayType.RECTANGLE,
+            ],
+        },
+        markerOptions: {
+            icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+        },
+        circleOptions: {
+            fillColor: "#ffff00",
+            fillOpacity: 1,
+            strokeWeight: 5,
+            clickable: false,
+            editable: true,
+            zIndex: 1,
+        },
+    });
+
+    drawingManager.setMap(map);
+
+
+
+    google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
+        let overlay = event.overlay;
+       
+        if (overlay instanceof google.maps.Polygon || overlay instanceof google.maps.Polyline) {
+            let path = overlay.getPath();
+            path.forEach(function (point) {
+                points_geofence.push({
+                    lat: point.lat(),
+                    lng: point.lng()
+                });
+            });
+        }
+
+    });
+
+
+    document.getElementById('activatePolygonButton').addEventListener('click', function () {
+        let selectedMode = document.getElementById('select-geofence').value;
+        if (selectedMode) {
+
+            drawingManager.setDrawingMode(google.maps.drawing.OverlayType[selectedMode]);
+        }
+    });
+
+    document.getElementById('cancelButton').addEventListener('click', function () {
+        drawingManager.setDrawingMode(null);
+        points_geofence = [];
+    });
+
     connectWebsockets();
 }
 
 let arrayDevices = [];
 let markers = [];
 let polylineSegments = [];
+let layers  = {};
 let map, infoWindow, markerSelected;
+let deviceSelected;
 
 async function connectWebsockets() {
     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -70,15 +131,16 @@ async function connectWebsockets() {
                                 milemark: closestPosition.milemark ?? null,
                                 description: closestPosition.description ?? null,
                                 contact: device.contact ? JSON.parse(device.contact) : null,
-                                trip: trip
+                                trip: trip,
+                                positionsLog: (PositionsLog && PositionsLog[device.id]) || []
                             };
-
                         });
                         addMarkers(arrayDevices);
                         writeDevicesList(arrayDevices);
+                        writeDevicesListLayer(arrayDevices);
+                        initLayers();
                         infoWindow = new google.maps.InfoWindow();
                     });
-
             })
             .then(() => {
                 const socket = new WebSocket('ws' + urlWebSockets.substring(4) + '/api/socket');
@@ -99,39 +161,7 @@ async function connectWebsockets() {
                     let data = JSON.parse(event.data);
                     if (data.positions) {
                         let position = data.positions[0];
-                        /*  Open Test  */
-                        position.attributes = {
-                            "priority": 1,
-                            "sat": 17,
-                            "event": 109,
-                            "ignition": true,
-                            "motion": true,
-                            "rssi": 5,
-                            "io200": 0,
-                            "io69": 1,
-                            "in1": false,
-                            "in2": false,
-                            "io113": 99,
-                            "pdop": 1.1,
-                            "hdop": 0.6000000000000001,
-                            "power": 12.098,
-                            "io24": 7,
-                            "io206": 30086,
-                            "battery": 3.991,
-                            "io68": 0,
-                            "operator": 732101,
-                            "odometer": 263069,
-                            "io636": 3881266,
-                            "io109": "26398/14027/26816/1568/1475/1577/77/78/77/68/66/0/0/0/0/22/0/0/68/77/69/206/0/0/69/65/57/26/26/26/0.00/0.00/0.00/133205.14/200797.18/231117.60/0/0/0/0/0/0/0/0/0/12/1/13/0.00/42.61/81.83/0.00",
-                            "emi": "{\"tfuel1\":133205.14,\"vol2\":26,\"vol1\":26,\"efp3\":0,\"efp2\":0,\"efp1\":22,\"tfuel2\":200797.18,\"tfuel3\":231117.6,\"ofuel3\":0,\"rpm3\":1577,\"ofuel1\":0,\"ofuel2\":0,\"rpm2\":1475,\"rpm1\":1568,\"load3\":0,\"load2\":0,\"load1\":0,\"sfuel2\":1,\"sfuel1\":12,\"sfuel3\":13,\"eop3\":69,\"eop2\":77,\"eop1\":68,\"eot3\":0,\"eot2\":66,\"hours2\":14027,\"eot1\":68,\"top3\":0,\"tfuelecu3\":0,\"hours1\":26398,\"top1\":206,\"tfuelecu1\":0,\"top2\":0,\"tfuelecu2\":0,\"tot3\":57,\"tot1\":69,\"hours3\":26816,\"tot2\":65,\"rfuel1\":0,\"rfuel2\":42.61,\"rfuel3\":81.83,\"ect3\":77,\"ifuel1\":0,\"ect2\":78,\"ifuel2\":0,\"depth\":0,\"ect1\":77,\"ifuel3\":0,\"vol3\":26,\"cfuel3\":0,\"cfuel2\":0,\"cfuel1\":0}",
-                            "ip": "191.156.245.175",
-                            "distance": 63.087605597567794,
-                            "totalDistance": 263798.42671892175,
-                            "hours": 233131000
-                        }
-                        /*  Closed Test  */
                         updateDevice(position);
-
                     }
                 };
             })
@@ -145,36 +175,40 @@ async function connectWebsockets() {
     }
 }
 
-
 function updateDevice(position) {
     let device = arrayDevices.find(d => d.deviceId === position.deviceId);
 
     if (device) {
-        for (const key in position) {
-            if (position.hasOwnProperty(key)) {
-                let closestPosition = findClosestPosition(position.latitude, position.longitude);
-                device[key] = position[key];
-                device['trip'] = JSON.parse(position.trip);
-                device['course'] = position.course + courseFormatter(position.course);
-                device['speed'] = parseFloat((position.speed * 1.852).toFixed(2));
-                device['location'] = closestPosition.location ? closestPosition.location.toUpperCase() : null;
-                device['milemark'] = closestPosition.milemark ?? null;
-                device['description'] = closestPosition.description ?? null;
+        let closestPosition = findClosestPosition(position.latitude, position.longitude);
 
+        device.latitude = position.latitude;
+        device.longitude = position.longitude;
+        device.speed = parseFloat((position.speed * 1.852).toFixed(2));
+        device.course = position.course + courseFormatter(position.course);
+        device.trip = JSON.parse(position.trip);
+        device.location = closestPosition.location ? closestPosition.location.toUpperCase() : null;
+        device.milemark = closestPosition.milemark ?? null;
+        device.description = closestPosition.description ?? null;
 
-            }
-        }
-        let deviceSelected = getSelectedDevice();
+        device.positionsLog.push({
+            attributes: position.attributes,
+            date: position.deviceTime,
+            lat: position.latitude,
+            lng: position.longitude,
+            speed: parseFloat((position.speed * 1.852).toFixed(2))
+        });
 
         updateMarker(device);
+        updateNewPolyline(device.positionsLog);
 
-        if (device.deviceId == deviceSelected.deviceId) {
+        if (device.deviceId === deviceSelected.deviceId) {
             updateNavigation(device);
             updateTelemetry(device);
             showTrip();
         }
     }
 }
+
 
 function formatDate(deviceTime) {
     if (!deviceTime) return "-";
@@ -229,12 +263,11 @@ function updateNavigation(device) {
 document.querySelectorAll("#nav-tab-principal button.nav-link").forEach(function (tabPrincipal) {
     tabPrincipal.addEventListener("shown.bs.tab", function (event) {
         let tabContentId = event.target.getAttribute('id');
-        let device = getSelectedDevice();
         let enginesNav = document.getElementById('nav_engines');
-        showOrHideNavEngines(device);
+        showOrHideNavEngines(deviceSelected);
         if (tabContentId == "nav-telemetry-tab") {
             enginesNav.style.display = "block";
-            updateTelemetry(device);
+            updateTelemetry(deviceSelected);
         } else if (tabContentId == "nav-voyage-plan-tab") {
             enginesNav.style.display = "none";
             showTrip();
@@ -246,11 +279,9 @@ document.querySelectorAll("#nav-tab-principal button.nav-link").forEach(function
 
 document.getElementById("nav-tab-secondary").addEventListener("click", function (event) {
     if (event.target && event.target.matches("button.nav-link")) {
-        let device = getSelectedDevice();
-        updateTelemetry(device);
+        updateTelemetry(deviceSelected);
     }
 });
-
 
 function updateTelemetry(device) {
     let tabEngines = document.querySelector('#nav-tab-secondary .nav-link.active');
@@ -323,28 +354,27 @@ function updateText(id, value, maxChars = null) {
     }
 }
 
-function getSelectedDevice() {
-    const selectedDeviceCard = document.querySelector(".device-card.selected");
+
+function changeSelectedDevice(cardDevices) {
+    const selectedDeviceCard = document.querySelector(`.${cardDevices}.selected`);
 
     if (selectedDeviceCard) {
         let deviceId = selectedDeviceCard.getAttribute("data-id");
-        let device = arrayDevices.find(d => d.deviceId === parseInt(deviceId));
-        return device;
-    } else {
-        return null;
+        deviceSelected = arrayDevices.find(d => d.deviceId === parseInt(deviceId));
     }
 }
 
 // click in the list Device
 document.addEventListener("deviceSelectionChanged", function (event) {
-    let device = getSelectedDevice();
-    updateText("title_device_selected", device.name.toUpperCase().substring(0, 15));
-    showOrHideNavEngines(device);
-    updateNavigation(device);
-    updateTelemetry(device);
+    changeSelectedDevice("device-card");
+    selectDeviceById(deviceSelected, "device-card-layer");
+    updateText("title_device_selected", deviceSelected.name.toUpperCase().substring(0, 15));
+    showOrHideNavEngines(deviceSelected);
+    updateNavigation(deviceSelected);
+    updateTelemetry(deviceSelected);
     showTrip();
 
-    var marker = markers[device.deviceId];
+    var marker = markers[deviceSelected.deviceId];
     if (marker) {
         // infoWindow.close();
         map.panTo(marker.getPosition());
@@ -362,25 +392,26 @@ function writeDevicesList(devices) {
         const deviceInfo = document.createElement("div");
         deviceInfo.classList.add("device-info");
 
-        const deviceNumber = document.createElement("div");
-        deviceNumber.classList.add("device-number");
-        deviceNumber.textContent = device.name.toUpperCase().substring(0, 15);
+        const deviceName = document.createElement("div");
+        deviceName.classList.add("device-name");
+        deviceName.textContent = device.name.toUpperCase().substring(0, 15);
 
         const deviceDetails = document.createElement("div");
         deviceDetails.classList.add("d-flex");
 
-        const deviceCode = document.createElement("span");
-        deviceCode.classList.add("device-code");
+        const deviceTrip = document.createElement("span");
+        deviceTrip.classList.add("device-trip");
 
-        const deviceModel = document.createElement("span");
-        deviceModel.classList.add("device-model");
-        deviceModel.textContent = device.speed + " km/h" || "Model A";
+        const deviceSpeed = document.createElement("span");
+        deviceSpeed.classList.add("device-speed");
+        deviceSpeed.textContent = device.speed + " km/h";
 
-        const userCount = document.createElement("span");
-        userCount.classList.add("user-count");
+        const deviceStatus = document.createElement("span");
+        deviceStatus.classList.add("device-status");
+        deviceStatus.textContent = "";
 
-        deviceDetails.append(deviceCode, deviceModel, userCount);
-        deviceInfo.append(deviceNumber, deviceDetails);
+        deviceDetails.append(deviceTrip, deviceSpeed, deviceStatus);
+        deviceInfo.append(deviceName, deviceDetails);
 
         const location = document.createElement("div");
         location.classList.add("device-location");
@@ -396,25 +427,108 @@ function writeDevicesList(devices) {
             deviceCard.classList.add("selected");
 
             const changeEvent = new CustomEvent("deviceSelectionChanged", {
-                detail: {
-                    deviceId: device.deviceId,
-                    name: device.name,
-                    model: device.model || "Model A",
-                    code: deviceCode.textContent,
-                    location: location.textContent
-                }
             });
             document.dispatchEvent(changeEvent);
         });
-        
+
     });
 
-    checkAliveDevices();
     if (devices.length > 0) {
         const firstDeviceCard = deviceListElement.querySelector(".device-card");
         if (firstDeviceCard) {
             firstDeviceCard.click();
         }
+    }
+}
+
+
+document.addEventListener("deviceLayerSelectionChanged", function (event) {
+    changeSelectedDevice("device-card-layer");
+    selectDeviceById(deviceSelected, "device-card");
+    updateText("title_device_selected", deviceSelected.name.toUpperCase().substring(0, 15));
+    showOrHideNavEngines(deviceSelected);
+    updateNavigation(deviceSelected);
+    updateTelemetry(deviceSelected);
+    showTrip();
+
+    var marker = markers[deviceSelected.deviceId];
+    if (marker) {
+        // infoWindow.close();
+        map.panTo(marker.getPosition());
+        map.setZoom(15);
+    }
+});
+
+function writeDevicesListLayer(devices) {
+    const deviceListLayerElement = document.getElementById("deviceListLayer");
+    devices.forEach(device => {
+        const deviceCard = document.createElement("div");
+        deviceCard.classList.add("device-card-layer");
+        deviceCard.setAttribute("data-id", device.deviceId);
+
+        const deviceInfo = document.createElement("div");
+        deviceInfo.classList.add("device-info");
+
+        const deviceName = document.createElement("div");
+        deviceName.classList.add("device-name-layer");
+        deviceName.textContent = device.name.toUpperCase().substring(0, 15);
+
+        const deviceDetails = document.createElement("div");
+        deviceDetails.classList.add("d-flex");
+
+        const deviceTrip = document.createElement("span");
+        deviceTrip.classList.add("device-trip-layer");
+
+        const deviceSpeed = document.createElement("span");
+        deviceSpeed.classList.add("device-speed-layer");
+        deviceSpeed.textContent = device.speed + " km/h";
+
+        const deviceStatus = document.createElement("span");
+        deviceStatus.classList.add("device-status-layer");
+        deviceStatus.textContent = "";
+
+        deviceDetails.append(deviceTrip, deviceSpeed, deviceStatus);
+        deviceInfo.append(deviceName, deviceDetails);
+
+        const location = document.createElement("div");
+        location.classList.add("device-location-layer");
+
+        deviceCard.append(deviceInfo, location);
+        deviceListLayerElement.appendChild(deviceCard);
+        deviceCard.addEventListener("click", function () {
+            const selectedDevice = document.querySelector(".device-card-layer.selected");
+            if (selectedDevice) {
+                selectedDevice.classList.remove("selected");
+            }
+            deviceCard.classList.add("selected");
+
+            const changeEvent = new CustomEvent("deviceLayerSelectionChanged", {
+            });
+            document.dispatchEvent(changeEvent);
+        });
+
+    });
+
+    checkAliveDevices();
+    if (devices.length > 0) {
+        const firstDeviceCard = deviceListLayerElement.querySelector(".device-card-layer");
+        if (firstDeviceCard) {
+            firstDeviceCard.click();
+        }
+    }
+}
+
+function selectDeviceById(device, cardDevices) {
+    const deviceCard = document.querySelector(`.${cardDevices}[data-id='${device.deviceId}']`);
+
+    if (deviceCard) {
+        const selectedDevice = document.querySelector(`.${cardDevices}.selected`);
+        if (selectedDevice) {
+            selectedDevice.classList.remove("selected");
+        }
+
+        deviceCard.classList.add("selected");
+
     }
 }
 
@@ -441,7 +555,15 @@ function addMarkers(devices) {
             },
         });
         markers[device.deviceId] = marker;
+        createPolyline(device.positionsLog);
     });
+
+    new MarkerClusterer(map, Object.values(markers),
+        {
+            imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+            gridSize: 60,
+            maxZoom: 10,
+        });
 }
 
 function updateMarker(device) {
@@ -475,7 +597,7 @@ async function createTrip(event) {
 
     let form = document.getElementById('createTripForm');
     let formData = new FormData(form);
-    let device = getSelectedDevice();
+    let device = deviceSelected;
 
     formData.append('deviceid', device.deviceId);
 
@@ -507,7 +629,7 @@ async function createTrip(event) {
 }
 
 function showTrip() {
-    let device = getSelectedDevice();
+    let device = deviceSelected;
     let buttonCreateTrip = document.getElementById('button_create_trip');
     let buttonUpdateTrip = document.getElementById('button_update_trip');
     let buttonFinishTrip = document.getElementById('button_finish_trip');
@@ -553,7 +675,7 @@ function showTrip() {
 }
 
 function getTrip() {
-    let device = getSelectedDevice();
+    let device = deviceSelected;
 
     return fetch('/trip/' + device.deviceId, {
         method: 'GET',
@@ -577,7 +699,7 @@ function getTrip() {
 }
 
 function editTrip() {
-    let device = getSelectedDevice();
+    let device = deviceSelected;
     if (device.trip && device.trip.number !== null) {
         document.getElementById('update_number_trip').value = (device.trip.number === null) ? "" : device.trip.number;
         $('#choices-update_origin-trip').val(device.trip.origin || "").selectpicker('refresh');
@@ -601,7 +723,7 @@ async function updateTrip(event) {
 
     let form = document.getElementById('updateTripForm');
     let formData = new FormData(form);
-    let device = getSelectedDevice();
+    let device = deviceSelected;
 
     try {
         let response = await fetch('/trip/update/' + device.deviceId, {
@@ -632,7 +754,7 @@ async function updateTrip(event) {
 }
 
 async function finishTrip() {
-    let device = getSelectedDevice();
+    let device = deviceSelected;
     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try {
@@ -733,76 +855,99 @@ function courseFormatter(course) {
 
 function checkAliveDevices() {
     arrayDevices.forEach(function (device) {
+        let deviceCard = document.querySelector(`.device-card[data-id="${device.deviceId}"]`);
+        let deviceCardLayer = document.querySelector(`.device-card-layer[data-id="${device.deviceId}"]`);
+
         let locationTelemetry = device.location + "-" + device.milemark + (device.description ? " - " + device.description : "");
-        document.querySelector(`[data-id="${device.deviceId}"] .device-location`).textContent = locationTelemetry;
+
+        deviceCard.querySelector('.device-location').textContent = locationTelemetry;
+        deviceCardLayer.querySelector('.device-location-layer').textContent = locationTelemetry;
 
         let tripStatus = device.trip && device.trip.number !== null ? "Trip" : null;
         let tripStatusHidden = device.trip && device.trip.number !== null ? false : true;
-        document.querySelector(`[data-id="${device.deviceId}"] .device-code`).textContent = tripStatus;
-        document.querySelector(`[data-id="${device.deviceId}"] .device-code`).hidden = tripStatusHidden;
+
+        deviceCard.querySelector('.device-trip').textContent = tripStatus;
+        deviceCard.querySelector('.device-trip').hidden = tripStatusHidden;
+
+        deviceCardLayer.querySelector('.device-trip-layer').textContent = tripStatus;
+        deviceCardLayer.querySelector('.device-trip-layer').hidden = tripStatusHidden;
 
         let dateFormat = formatDate(device.deviceTime);
         let fixedDate = new Date(dateFormat);
         let currentDate = new Date();
         let difference = Math.abs(currentDate - fixedDate);
-        document.querySelector(`[data-id="${device.deviceId}"] .device-model`).classList.remove("badge-warning", "badge-success", "badge-danger");
+
+        deviceCard.querySelector('.device-status').classList.remove("badge-warning", "badge-success", "badge-danger");
+        deviceCardLayer.querySelector('.device-status-layer').classList.remove("badge-warning", "badge-success", "badge-danger");
+
         if (!device.deviceTime) {
-            document.querySelector(`[data-id="${device.deviceId}"] .device-model`).textContent = 'Offline';
-            document.querySelector(`[data-id="${device.deviceId}"] .device-model`).classList.add("badge-danger");
+            deviceCard.querySelector('.device-status').textContent = 'Offline';
+            deviceCard.querySelector('.device-status').classList.add("badge-danger");
+
+            deviceCardLayer.querySelector('.device-status-layer').textContent = 'Offline';
+            deviceCardLayer.querySelector('.device-status-layer').classList.add("badge-danger");
         } else if (difference < 60000) {
             let typeStatusColor = device.speed === 0 ? "badge-warning" : "badge-success";
             let typeStatus = device.speed === 0 ? "Stopped" : "Moving";
-            document.querySelector(`[data-id="${device.deviceId}"] .device-model`).textContent = typeStatus;
-            document.querySelector(`[data-id="${device.deviceId}"] .device-model`).classList.add(typeStatusColor);
+            deviceCard.querySelector('.device-status').textContent = typeStatus;
+            deviceCard.querySelector('.device-status').classList.add(typeStatusColor);
+
+            deviceCardLayer.querySelector('.device-status-layer').textContent = typeStatus;
+            deviceCardLayer.querySelector('.device-status-layer').classList.add(typeStatusColor);
+
         } else if (difference >= 60000) {
             let message_text = displayElapsedTime(difference).length > 8
                 ? displayElapsedTime(difference).substring(0, 8)
                 : displayElapsedTime(difference).padStart(8, ' ');
-            document.querySelector(`[data-id="${device.deviceId}"] .device-model`).textContent = message_text;
-            document.querySelector(`[data-id="${device.deviceId}"] .device-model`).classList.add("badge-danger");
+            deviceCard.querySelector('.device-status').textContent = message_text;
+            deviceCard.querySelector('.device-status').classList.add("badge-danger");
+
+            deviceCardLayer.querySelector('.device-status-layer').textContent = message_text;
+            deviceCardLayer.querySelector('.device-status-layer').classList.add("badge-danger");
+
         }
     });
 }
 
 function displayElapsedTime(timeMilliseconds) {
-    var timeSeconds = timeMilliseconds / 1000;
-    var message;
+    let timeSeconds = timeMilliseconds / 1000;
+    let message;
     if (timeSeconds < 60) {
         message = timeSeconds.toFixed(0) + " sec";
     } else if (timeSeconds < 3600) {
-        var timeMinutes = timeSeconds / 60;
+        let timeMinutes = timeSeconds / 60;
         message = timeMinutes.toFixed(0) + " min";
     } else if (timeSeconds < 86400) {
-        var timeHours = timeSeconds / 3600;
+        let timeHours = timeSeconds / 3600;
         message = timeHours.toFixed(0) + " hours";
     } else if (timeSeconds < 2678400) {
-        var timeDays = timeSeconds / 86400;
+        let timeDays = timeSeconds / 86400;
         message = timeDays.toFixed(0) + " days";
     } else if (timeSeconds < 31536000) {
-        var timeMonths = timeSeconds / 2628000;
+        let timeMonths = timeSeconds / 2628000;
         message = timeMonths.toFixed(0) + " month";
     } else {
-        var timeYears = timeSeconds / 31536000;
+        let timeYears = timeSeconds / 31536000;
         message = timeYears.toFixed(0) + " years";
     }
     return message;
 }
 
 function checkAndRemoveOldPositions() {
-    for (var i = 0; i < polylineSegments.length; i++) {
+    for (let i = 0; i < polylineSegments.length; i++) {
         polylineSegments[i].setMap(null);
     }
     polylineSegments = [];
     arrayDevices.forEach(function (device) {
-        var newPositions = [];
-        device.positions.forEach(function (position) {
-            var date_format = position.date;
-            var date_now = new Date().toISOString();
-            var date_one = new Date(date_now);
-            var date_two = new Date(date_format);
-            var difference = Math.abs(date_one - date_two);
+        let newPositions = [];
+        device.positionsLog.forEach(function (position) {
+            let date_format = position.date;
+            let date_now = new Date().toISOString();
+            let date_one = new Date(date_now);
+            let date_two = new Date(date_format);
+            let difference = Math.abs(date_one - date_two);
             if (difference <= 3600000) {
-                var devicePosition = {
+                let devicePosition = {
                     attributes: position.attributes,
                     date: position.date,
                     speed: position.speed,
@@ -812,17 +957,274 @@ function checkAndRemoveOldPositions() {
                 newPositions.push(devicePosition);
             }
         });
-        device.positions = newPositions;
-        if (device.positions.length > 0) {
+        device.positionsLog = newPositions;
+        if (device.positionsLog.length > 0) {
             createPolyline(newPositions);
         }
     });
 }
 
+function createPolyline(points) {
+    for (let i = 1; i < points.length; i++) {
+        let speed = points[i].speed;
+        let color = getColorForSpeed(speed);
+        let segment = new google.maps.Polyline({
+            map: map,
+            path: [
+                new google.maps.LatLng(points[i - 1].lat, points[i - 1].lng),
+                new google.maps.LatLng(points[i].lat, points[i].lng),
+            ],
+            strokeColor: color,
+            strokeOpacity: 1.0,
+            strokeWeight: 5,
+        });
+        (function (segmentIndex) {
+            google.maps.event.addListener(segment, 'mouseover', function (e) {
+                let point = points[segmentIndex];
+                let dateFormat = formatDate(point.date);
+                let event = point.attributes?.event ?? '';
+
+                let content = `
+                    <div class="col-lg-12 col-12">
+                        <div>
+                            <span class="text-sm">Speed:</span>
+                            <span class="text-dark text-sm font-weight-bold">${point.speed} km/h</span>
+                            <span class="text-sm ms-2">Date:</span>
+                            <span class="text-dark font-weight-bold">${dateFormat}</span>
+                        </div>
+                        <div>
+                            <span class="text-sm">Motion:</span>
+                            <span class="text-dark text-sm font-weight-bold">${point.attributes.motion}</span>
+                            <span class="text-sm ms-2">event:</span>
+                            <span class="text-dark font-weight-bold">${event}</span>
+                        </div>
+                    </div>
+                `;
+
+                infoWindow.setContent(content);
+                infoWindow.setPosition(e.latLng);
+                infoWindow.open(map);
+            });
+
+            google.maps.event.addListener(segment, 'mouseout', function () {
+                infoWindow.close();
+            });
+        })(i);
+        polylineSegments.push(segment);
+    }
+    return polylineSegments;
+}
+
+function updateNewPolyline(points) {
+    if (points.length > 1) {
+        let penultimateValue = points[points.length - 2];
+        let lastValue = points[points.length - 1];
+        let combinedPoints = [penultimateValue].concat(lastValue);
+        return createPolyline(combinedPoints);
+    }
+    return [];
+}
+
+function getColorForSpeed(speed) {
+    var minSpeed = 0;
+    var maxSpeed = 20;
+    var percent = (speed - minSpeed) / (maxSpeed - minSpeed);
+    var color_map = [
+        "#301E6A",
+        "#0B4C6B",
+        "#007A5E",
+        "#6BA143",
+        "#B2B04E",
+        "#F8FF78",
+        "#FFA869",
+        "#F15C5C",
+    ];
+    var index = Math.floor(percent * (color_map.length - 1));
+    return color_map[index];
+}
 
 document.addEventListener('DOMContentLoaded', function () {
-    setInterval(checkAliveDevices, 10000);
+    setInterval(checkAliveDevices, 30000);
+    setInterval(checkAndRemoveOldPositions, 10000);
+    createTableGeofence();
+    // createTable();
     // setInterval(checkAndRemoveOldPositions, 10000);
 });
 
 
+
+
+
+function initLayers() {
+    layerAis = new google.maps.KmlLayer({
+        url:
+            "https://ais.emotiva.com.co/output/ais.kml?test=" +
+            Math.round(new Date().getTime()),
+        suppressInfoWindows: false,
+        preserveViewport: true,
+        map: map,
+    });
+
+    layerMile = new google.maps.KmlLayer({
+        url:
+            "https://impala.emotiva.com.co/milemarks.kml?test=" +
+            Math.round(new Date().getTime()),
+        suppressInfoWindows: false,
+        preserveViewport: true,
+        map: map,
+    });
+
+    layerIdeam = new google.maps.KmlLayer({
+        url:
+            "https://impala.emotiva.co/upgrade/gps/ideam.kml?test=" +
+            Math.round(new Date().getTime()),
+        suppressInfoWindows: false,
+        preserveViewport: true,
+        map: map,
+    });
+
+    layerEnc = new google.maps.KmlLayer({
+        url:
+            "https://impala.emotiva.co/upgrade/enc.kml?test=" +
+            Math.round(new Date().getTime()),
+        suppressInfoWindows: false,
+        preserveViewport: true,
+        map: map,
+    });
+
+    layerPointsAttention = new google.maps.KmlLayer({
+        url:
+            "https://impala.emotiva.com.co/upgrade/atencion.kml?test=" +
+            Math.round(new Date().getTime()),
+        suppressInfoWindows: false,
+        preserveViewport: true,
+        map: map,
+    });
+
+    layerCellularCoverage = new google.maps.KmlLayer({
+        url:
+            "https://impala.emotiva.com.co/upgrade/coverage.kml?test=" +
+            Math.round(new Date().getTime()),
+        suppressInfoWindows: false,
+        preserveViewport: true,
+        map: map,
+    });
+
+    layers.checkbox_ais = layerAis;
+    layers.checkbox_mile = layerMile;
+    layers.checkbox_ideam = layerIdeam;
+    layers.checkbox_enc = layerEnc;
+    layers.checkbox_points_attention = layerPointsAttention;
+    layers.checkbox_cellular_coverage = layerCellularCoverage;
+
+    layerAis.setMap(map);
+    layerMile.setMap(map);
+    layerIdeam.setMap(map);
+    layerEnc.setMap(map);
+    layerPointsAttention.setMap(map);
+    layerCellularCoverage.setMap(map);
+}
+
+const checkboxes_layers = document.querySelectorAll('input[type="checkbox"]');
+checkboxes_layers.forEach(checkbox => {
+    checkbox.addEventListener('change', function () {
+        const layer = layers[checkbox.id];
+        if (layer) {
+            layer.setMap(this.checked ? map : null);
+        }
+    });
+});
+
+
+/* *//////////////////////
+
+
+var points_geofence = [];
+
+function saveButton() {
+
+    let selectedMode = document.getElementById('select-geofence').value;
+    let area;
+    if (selectedMode === 'POLYGON') {
+        let polygon = points_geofence.map(point => `${point.lat} ${point.lng}`).join(', ');
+        area = `POLYGON ((${polygon}))`;
+    } else if (selectedMode === 'POLYLINE') {
+        let lineString = points_geofence.map(point => `${point.lat} ${point.lng}`).join(', ');
+        area = `LINESTRING (${lineString})`;
+    }
+
+
+    var formData = $("#formGeofence").serialize();
+    formData += "&area=" + area;
+    $.ajax({
+        url: geofence_url,
+        type: "POST",
+        data: formData,
+        success: function (response) {
+
+            if (dataTableSearchtrack2) {
+                dataTableSearchtrack2.destroy();
+                dataTableSearchtrack2 = null;
+            }
+            document.getElementById('name_geofence').value = '';
+            document.getElementById('name_description').value = '';
+            createTableGeofence();
+
+
+        },
+    });
+
+    points_geofence = [];
+}
+
+
+
+function wktToLatLngArray(wkt) {
+    const coordinates = wkt
+        .replace(/^LINESTRING \(|POLYGON \(\(/, '')
+        .replace(/\)\)$/, '')
+        .split(', ')
+        .map(coord => {
+            const [lat, lng] = coord.split(' ').map(parseFloat);
+            return { lat, lng };
+        });
+    return coordinates;
+}
+let polygonsGeofence = [];
+
+function drawGeofence(response) {
+
+    response.forEach(geocerca => {
+        const path = wktToLatLngArray(geocerca.area);
+
+        if (geocerca.area.startsWith('POLYGON')) {
+            const polygon =new google.maps.Polygon({
+                paths: path,
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.15,
+                map: map
+            });
+            polygonsGeofence.push(polygon);
+        } else if (geocerca.area.startsWith('LINESTRING')) {
+            const polygon =new google.maps.Polyline({
+                path: path,
+                strokeColor: '#0000FF',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                map: map
+            });
+            polygonsGeofence.push(polygon);
+        }
+    });
+
+}
+
+function clearGeofences() {
+    polygonsGeofence.forEach(polygon => {
+        polygon.setMap(null);
+    });
+    polygonsGeofence = [];
+}
