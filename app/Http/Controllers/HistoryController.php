@@ -39,6 +39,26 @@ class HistoryController extends Controller
             if (is_array($response) && count($response) > 1) {
                 $history = $this->writeInFiles(collect($response), $nameDevice);
             }
+        }else{
+            $namePositionsLogs = $this->getPositionsLogTable();
+            $history = DB::table($namePositionsLogs)->where('deviceid', $device)
+                ->where('devicetime', '>=', $dateStart)
+                ->where('devicetime', '<=', $dateEnd)
+                ->select(
+                    'deviceid',
+                    'name',
+                    'devicetime',
+                    'cog AS course',
+                    'longitude',
+                    'latitude',
+                    'altitude',
+                    'speed',
+                    'trip',
+                    'attributes',
+                    'telemetry',
+                    'location',
+                )
+                ->get();
         }
         return $history;
     }

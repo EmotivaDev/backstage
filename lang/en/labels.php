@@ -183,6 +183,7 @@ return [
         'latitude' => 'Latitude',
         'longitude' => 'Longitude',
         'trip' => 'Trip',
+        'geofence' => 'Geofence',
     ],
 
 

@@ -210,6 +210,98 @@ class TraccarHelper
         return $result;
     }
 
+    public function createGeofence($name, $description, $area)
+    {
+        $result = null;
+        try {
+            $response = Http::withBasicAuth($this->root, $this->password)
+                ->withHeaders(['Content-Type' => 'application/json'])
+                ->timeout(1)
+                ->post($this->url . '/api/geofences', [
+                    'name' => $name,
+                    'description' => $description,
+                    'area' => $area,
+                ]);
+
+            $result = $this->handleResponse($response);
+        } catch (\Exception $e) {
+            Log::error('Traccar Error ', ['exception' => $e->getMessage()]);
+        }
+        return $result;
+    }
+
+    public function updateGeofence($geofenceId, $name, $description, $area)
+    {
+        $result = null;
+        try {
+            $response = Http::withBasicAuth($this->root, $this->password)
+                ->withHeaders(['Content-Type' => 'application/json'])
+                ->timeout(1)
+                ->put($this->url . '/api/geofences/' . 28, [
+                    'id' => $geofenceId,
+                    'name' => $name,
+                    'description' => $description,
+                    'area' => $area,
+                ]);
+            $result = $this->handleResponse($response);
+        } catch (\Exception $e) {
+            Log::error('Traccar Error ', ['exception' => $e->getMessage()]);
+        }
+        return $result;
+    }
+
+    public function updateAreaGeofence($geofenceId, $name, $area)
+    {
+        $result = null;
+        try {
+            $response = Http::withBasicAuth($this->root, $this->password)
+                ->withHeaders(['Content-Type' => 'application/json'])
+                ->timeout(1)
+                ->put($this->url . '/api/geofences/' . $geofenceId, [
+                    'id' => $geofenceId,
+                    'name' => $name,
+                    'area' => $area,
+                ]);
+            $result = $this->handleResponse($response);
+        } catch (\Exception $e) {
+            Log::error('Traccar Error ', ['exception' => $e->getMessage()]);
+        }
+        return $result;
+    }
+
+    public function getGeofencesTraccar()
+    {
+        $result = null;
+        try {
+            $response = Http::withBasicAuth($this->root, $this->password)
+                ->withHeaders(['Content-Type' => 'application/json'])
+                ->timeout(1)
+                ->get($this->url . '/api/geofences');
+            $result = $this->handleResponse($response);
+        } catch (\Exception $e) {
+            Log::error('Traccar Error ', ['exception' => $e->getMessage()]);
+        }
+        return $result;
+    }
+
+    public function destroyGeofence($geofenceId)
+    {
+        $result = null;
+        try {
+            $response = Http::withBasicAuth($this->root, $this->password)
+                ->withHeaders(['Content-Type' => 'application/json'])
+                ->timeout(1)
+                ->delete($this->url . '/api/geofences/' . $geofenceId);
+
+            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+                $result = 'ok';
+            };
+        } catch (\Exception $e) {
+            Log::error('Traccar Error ', ['exception' => $e->getMessage()]);
+        }
+        return $result;
+    }
+
     public function getPositionsRange($device, $dateStart, $dateEnd)
     {
         $result = null;

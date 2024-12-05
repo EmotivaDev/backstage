@@ -8,6 +8,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\RealtimeController;
 use App\Http\Controllers\TripController;
+use App\Http\Controllers\GeofenceController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
@@ -31,19 +32,18 @@ Route::middleware('auth')->group(function () {
     Route::get('trip/{device}', [TripController::class, 'show'])->name('trip.show');
 
 
-    Route::get('trails', [RealtimeController::class, 'trails'])->name('trails.select');
+    // Route::get('trails', [RealtimeController::class, 'trails'])->name('trails.select');
 
-    Route::post('trails', [RealtimeController::class, 'uploadTrail'])->name('trails.upload');
+    // Route::post('trails', [RealtimeController::class, 'uploadTrail'])->name('trails.upload');
 
-    Route::post('trails/{trail}', [RealtimeController::class, 'destroyTrail'])->name('trails.delete');
+    // Route::post('trails/{trail}', [RealtimeController::class, 'destroyTrail'])->name('trails.delete');
 
-    Route::post('geofence', [RealtimeController::class, 'createGeofence'])->name('geofence');
-
-    Route::get('geofence', [RealtimeController::class, 'selectGeofence'])->name('geofence.select');
-
-    Route::post('geofences/{geofence}', [RealtimeController::class, 'destroyGeofence'])->name('trails.delete');
-
-
+     // Routes for controller GeofenceController
+    Route::post('geofences/create', [GeofenceController::class, 'createGeofence'])->name('geofences.create');
+    Route::get('geofences', [GeofenceController::class, 'getGeofences'])->name('geofences.show');
+    Route::delete('geofences/{geofence}', [GeofenceController::class, 'destroyGeofence'])->name('geofences.delete');
+    Route::put('geofences/{geofence}', [GeofenceController::class, 'updateGeofence'])->name('geofences.update');
+    Route::put('geofences/area/{geofence}', [GeofenceController::class, 'updateAreaGeofence'])->name('geofences.update.area');
 
     // Routes for controller MyprofileController
     Route::get('myprofile', [MyprofileController::class, 'index'])->name('myprofile');

@@ -769,7 +769,7 @@
     <div class="collapse collapse-buttons collapse-horizontal" id="collapseGeofences">
         <div class="card card-body" style="width: 300px;">
             <div class="container">
-                <form method="POST" id="formGeofence">
+                <form method="POST" id="formCreateGeofence">
                     @csrf
                     <div class="col-md-6 d-flex  align-items-center pb-2">
                         <i class="material-symbols-rounded me-2">crop</i>
@@ -779,46 +779,50 @@
                         <div class="col-6">
                             <div class="input-group input-group-static">
                                 <label style="margin-bottom: 2px">{{ trans('labels.texts.name') }}*</label>
-                                <input type="text" class="form-control py-0" name="name" id="name_geofence">
+                                <input type="text" class="form-control py-0" name="name"
+                                    id="create_name_geofence">
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="input-group input-group-static">
                                 <label style="margin-bottom: 2px">{{ trans('labels.texts.description') }}</label>
                                 <input type="text" class="form-control py-0" name="description"
-                                    id="name_description">
+                                    id="create_description_geofence">
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-12">
                             <label class="mb-0 ms-0 pt-1">Type Geofence*</label>
-                            <select class="selectpicker" name="geofence" id="select-geofence" data-size="3"
+                            <select class="selectpicker" name="geofence" id="select-type-geofence" data-size="3"
                                 data-width="100%" placeholder="Choose" data-live-search="true">
-                                <option value="POLYGON" selected>Polygon</option>
-                                <option value="POLYLINE">PoLyline</option>
+                                @foreach ($geofenceTypes as $key => $value)
+                                    <option value="{{ $value }}" selected>
+                                        {{ strtoupper($value) }}</option>
+                                @endforeach
                             </select>
                             @error('geofence')
                                 <div class="text-danger ms-1"><small> {{ $message }}</small></div>
                             @enderror
                         </div>
                     </div>
+
                     <p class="text-xs mb-1 mt-2">@lang('labels.texts.fields_required')</p>
                     <div class="button-row d-flex ">
                         <a class="btn btn-sm bg-gradient-light mb-0 js-btn-prev" title="Cancel"
-                            id="cancelButton">Cancel</a>
+                            id="cancelButtonGeofence">Cancel</a>
                         <button class="btn btn-sm bg-gradient-dark ms-auto mb-0 js-btn-next" type="button"
-                            title="Add" id="activatePolygonButton">Add</button>
+                            title="draw" id="activatePolygonButtonGeofence">Draw Points</button>
                         <button class="btn btn-info btn-sm ms-auto mb-0 js-btn-next" type="button" title="save"
-                            onclick="saveButton()">Save</button>
+                            onclick="createGeofence()">Save</button>
                     </div>
                 </form>
                 <div class="table-responsive pt-3">
-                    <table class="table table-flush" id="tracks-list2">
+                    <table class="table table-flush" id="table-geofences">
                         <thead class="thead-light">
                             <tr>
                                 <th>@lang('labels.texts.name')</th>
-                                <th>@lang('labels.texts.description')</th>
                                 <th>@lang('labels.texts.actions')</th>
                             </tr>
                         </thead>
@@ -827,7 +831,6 @@
                         <tfoot>
                             <tr>
                                 <th>@lang('labels.texts.name')</th>
-                                <th>@lang('labels.texts.description')</th>
                                 <th>@lang('labels.texts.actions')</th>
                             </tr>
                         </tfoot>
@@ -1145,261 +1148,82 @@
         </div>
     </div>
 
+    {{-- Edit Geofence --}}
+    <div class="col-md-4">
+        <div class="modal fade" id="modal-form-update-geofence" tabindex="1000" role="dialog"
+            aria-labelledby="modal-form-update-geofence" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body p-0">
+                        <div class="card card-plain">
+                            <div class="card-header pb-0 text-left">
+                                <h5 class="">Update Geofence</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" id="formUpdateGeofence">
+                                    @csrf
+                                    <input type="text" id="update_id_geofence" name="id" hidden>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="input-group input-group-static">
+                                                <label
+                                                    style="margin-bottom: 2px">{{ trans('labels.texts.name') }}*</label>
+                                                <input type="text" class="form-control py-0" name="name"
+                                                    id="update_name_geofence">
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="input-group input-group-static">
+                                                <label
+                                                    style="margin-bottom: 2px">{{ trans('labels.texts.description') }}</label>
+                                                <input type="text" class="form-control py-0" name="description"
+                                                    id="update_description_geofence">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="input-group input-group-static">
+                                                <label
+                                                    style="margin-bottom: 2px">Type Geofence</label>
+                                                <input type="text" class="form-control py-0"
+                                                    id="select-update-type-geofence" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-xs mb-1 mt-2">@lang('labels.texts.fields_required')</p>
+                                    <div class="button-row d-flex ">
+                                        <button class="btn btn-dark btn-sm ms-auto mb-0 js-btn-next" type="button"
+                                            title="save" onclick="updateGeofence()">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <script>
         var urlWebSockets = "{{ env('URL_TRACCAR') }}";
         var timeZone = "{{ auth()->user()->time_zone }}";
         var listReverseGeocodes = {!! json_encode($reverseGeocodes) !!};
         var listTrips = {!! json_encode($trips) !!};
         var PositionsLog = {!! json_encode($PositionsLog) !!};
-        var geofence_url = "{{ route('geofence') }}";
-        var geofence_url_select = "{{ route('geofence.select') }}";
     </script>
+
     <script src="{{ asset('template/assets/js/plugins/datatables.js') }}"></script>
     <script src="{{ asset('assets/js/realtime/general.js') }}?v={{ time() }}"></script>
     <script src="{{ asset('template/assets/js/plugins/markerclusterer.js') }}"></script>
     <script src="{{ asset('assets/js/realtime/realtime.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('assets/js/realtime/geofence.js') }}?v={{ time() }}"></script>
 
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key={{ env('KEY_MAP') }}&libraries=drawing&callback=initMap">
     </script>
-
-    <script>
-        // var table = new simpleDatatables.DataTable("#tracks-list1");
-        var checkboxes;
-        var dataTableSearchtrack1;
-        var dataTableSearchtrack2;
-        var trails;
-
-        function uploadFile(params) {
-
-            var formData = new FormData();
-            var fileField = $('#gpx_file')[0].files[0];
-
-            // Verificar si se seleccionó un archivo
-            if (!fileField) {
-                alert('Por favor selecciona un archivo GPX.');
-                return;
-            }
-
-            formData.append('file', fileField);
-
-            // Realizar la solicitud AJAX
-            $.ajax({
-                url: '{{ route('trails.upload') }}',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if (dataTableSearchtrack1) {
-                        dataTableSearchtrack1.destroy();
-                        dataTableSearchtrack1 = null;
-                    }
-                    createTable();
-
-
-                },
-                error: function(xhr, status, error) {
-
-                    console.error(xhr.responseText);
-                }
-            });
-        }
-
-        document.querySelector('#tracks-list1').addEventListener('click', function(event) {
-            if (event.target.classList.contains("btn-delete")) {
-                var tr = event.target.closest('tr');
-                var cells = tr.querySelectorAll('td');
-                let id = cells[0].querySelector('input').id.replace(/^TrackCheck/, '');
-                $.ajax({
-                    url: `/trails/${parseInt(id)}`,
-                    type: "POST",
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response == true) {
-                            if (dataTableSearchtrack1) {
-                                dataTableSearchtrack1.destroy();
-                                dataTableSearchtrack1 = null;
-                            }
-                            createTable();
-                            tripToast("Tracker Deleted", "success", "check");
-                        } else {
-                            console.log(response)
-                            tripToast(response.message, "danger", "campaign");
-                        }
-                    }
-                });
-            }
-            if (event.target.classList.contains('my-checkbox')) {
-                let checkbox = document.getElementById(event.target.id);
-
-                let id = checkbox.id.replace(/^TrackCheck/, '');
-                let trail = trails.find(trail => trail.id === parseInt(id));
-
-                if (checkbox.checked) {
-                    cargarKML(trail);
-                } else {
-                    quitarKML();
-                }
-            }
-            // if (event.target.classList.contains('btn-delete')) {
-            //     const row = event.target.closest('tr'); // Encuentra la fila correspondiente
-            //     if (row) {
-            //         // Elimina la fila de la tabla
-            //         dataTableSearchtrack1.rows().remove(row);
-            //     }
-            // }
-        });
-
-
-
-        document.querySelector('#tracks-list2').addEventListener('click', function(event) {
-
-            if (event.target.classList.contains("btn-delete")) {
-
-                // var tr = event.target.closest('tr');
-                // var cells = tr.querySelectorAll('td');
-                // console.log(cells)
-                // console.log( cells[2].querySelector('label'))
-                // let id = cells[2].querySelector('label').id.replace(/^GeofenceItem/, '');
-                const itemId = event.target.id;
-
-
-                const extractedId = itemId.replace('GeofenceItem', '');
-
-                $.ajax({
-                    url: `/geofences/${parseInt(extractedId)}`,
-                    type: "POST",
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response == true) {
-                            if (dataTableSearchtrack2) {
-                                dataTableSearchtrack2.destroy();
-                                dataTableSearchtrack2 = null;
-                            }
-                            clearGeofences()
-                            createTableGeofence();
-                            tripToast("Geofence Deleted", "success", "check");
-                        } else {
-                            console.log(response)
-                            tripToast(response.message, "danger", "campaign");
-                        }
-                    }
-                });
-            }
-
-        });
-
-        function createTable() {
-            $.ajax({
-                url: '{{ route('trails.select') }}',
-                type: 'GET',
-                processData: false,
-                contentType: false,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-
-                    trails = response;
-
-                    const newDataArray = response.map(item => ({
-                        "Name": `
-                                        <div class="d-flex">
-                        <div class="form-check my-auto">
-                            <input class="form-check-input my-checkbox" type="checkbox" id="TrackCheck${item.id}">
-                        </div>
-                        <label class="ms-3 my-auto name-label" data-bs-toggle="tooltip" title="${item.name.toUpperCase()} - ${item.created_at}" style="cursor: pointer">
-                            ${item.name.length > 15 ? item.name.substring(0, 15).toUpperCase() + '...' : item.name.toUpperCase()}
-                        </label>
-                    </div>`,
-
-                        "Actions": `
-          <div class="text-center">
-        <a href="#" data-bs-toggle="tooltip" title="Delete" class="ext-center">
-            <i class="material-symbols-rounded text-secondary position-relative text-lg btn-delete">delete</i>
-        </a> </div>`
-                    }));
-
-                    dataTableSearchtrack1 = new simpleDatatables.DataTable("#tracks-list1", {
-                        searchable: true,
-
-                        perPage: 3,
-                    });
-
-                    dataTableSearchtrack1.insert(newDataArray);
-
-                },
-                error: function(xhr, status, error) {
-
-                    console.error(xhr.responseText);
-                }
-            });
-
-
-        }
-
-
-        function createTableGeofence() {
-
-            $.ajax({
-                url: '{{ route('geofence.select') }}',
-                type: 'GET',
-                processData: false,
-                contentType: false,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-
-                    const formatText = (text) => {
-                        if (text && text.length > 0) {
-                            return text.length > 15 ? text.substring(0, 15).toUpperCase() + '...' : text
-                                .toUpperCase();
-                        }
-                        return '';
-                    };
-
-                    const newDataArray = response.map(item => ({
-                        "Name": `
-                                     
-                        <label class="ms-3 my-auto name-label" >
-                            ${item.name.length > 15 ? item.name.substring(0, 15).toUpperCase() + '...' : item.name.toUpperCase()}
-                        </label>
-                    `,
-                        "Description": `
-                        <label class="ms-3 my-auto name-label" >
-                             ${formatText(item.description)}
-                        </label>
-                    `,
-
-                        "Actions": `
-                         <div class="text-center">
-        <a href="#" data-bs-toggle="tooltip" title="Delete" >
-            <i class="material-symbols-rounded text-secondary position-relative text-lg btn-delete" id="GeofenceItem${item.id}">delete</i>
-        </a> </div>`
-                    }));
-
-                    dataTableSearchtrack2 = new simpleDatatables.DataTable("#tracks-list2", {
-                        searchable: true,
-
-                        perPage: 3,
-                    });
-                    dataTableSearchtrack2.insert(newDataArray);
-                    drawGeofence(response);
-                },
-                error: function(xhr, status, error) {
-
-                    console.error(xhr.responseText);
-                }
-            });
-        }
-    </script>
-    @endsection
+@endsection

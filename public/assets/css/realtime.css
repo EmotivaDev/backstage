@@ -573,6 +573,74 @@
     height: 0.95rem !important;
 }
 
+/******* geofences ****/
 .gmnoprint {
+
     display: none;
+}
+
+
+.dataTable-dropdown,
+.dataTable-info {
+    display: none !important;
+}
+
+.dataTable-top>nav:last-child,
+.dataTable-top>div:last-child,
+.dataTable-bottom>nav:last-child,
+.dataTable-bottom>div:last-child {
+    text-align: center !important;
+}
+
+.dataTable-top>nav:last-child,
+.dataTable-top>div:last-child,
+.dataTable-bottom>nav:last-child,
+.dataTable-bottom>div:last-child {
+    float: revert;
+}
+
+.dataTable-wrapper .dataTable-top,
+.dataTable-bottom {
+    padding: 0;
+}
+
+.dataTable-wrapper .dataTable-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center; 
+    padding-bottom: 0px;
+}
+
+.dataTable-wrapper .dataTable-container .table tbody tr td {
+    padding: 0;
+}
+
+.form-check {
+    display: block;
+    min-height: auto;
+    padding-left: 0;
+    margin-bottom: 0.125rem;
+}
+
+.dataTable-pagination ul {
+    margin: 0;
+    padding-left: 0;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=checkbox]:checked {
+    background: #1A73E8;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=checkbox]:checked, .form-check:not(.form-switch) .form-check-input[type=radio]:checked {
+    border-color: #1A73E8;
+}
+
+#table-geofences td:nth-child(1) {
+    width: 90%; /* Ancho de la primera columna */
+}
+
+#table-geofences td:nth-child(2) {
+    width: 10%; /* Ancho de la segunda columna */
 }

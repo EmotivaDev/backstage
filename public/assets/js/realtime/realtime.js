@@ -1,3 +1,10 @@
+let arrayDevices = [];
+let markers = [];
+let polylineSegments = [];
+let layers = {};
+let map, infoWindow, markerSelected;
+let deviceSelected;
+
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 15,
@@ -13,74 +20,9 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false
     });
-    const drawingManager = new google.maps.drawing.DrawingManager({
-        drawingMode: null,
-        drawingControl: true,
-        drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_CENTER,
-            drawingModes: [
-                google.maps.drawing.OverlayType.MARKER,
-                google.maps.drawing.OverlayType.CIRCLE,
-                google.maps.drawing.OverlayType.POLYGON,
-                google.maps.drawing.OverlayType.POLYLINE,
-                google.maps.drawing.OverlayType.RECTANGLE,
-            ],
-        },
-        markerOptions: {
-            icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
-        },
-        circleOptions: {
-            fillColor: "#ffff00",
-            fillOpacity: 1,
-            strokeWeight: 5,
-            clickable: false,
-            editable: true,
-            zIndex: 1,
-        },
-    });
-
-    drawingManager.setMap(map);
-
-
-
-    google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
-        let overlay = event.overlay;
-       
-        if (overlay instanceof google.maps.Polygon || overlay instanceof google.maps.Polyline) {
-            let path = overlay.getPath();
-            path.forEach(function (point) {
-                points_geofence.push({
-                    lat: point.lat(),
-                    lng: point.lng()
-                });
-            });
-        }
-
-    });
-
-
-    document.getElementById('activatePolygonButton').addEventListener('click', function () {
-        let selectedMode = document.getElementById('select-geofence').value;
-        if (selectedMode) {
-
-            drawingManager.setDrawingMode(google.maps.drawing.OverlayType[selectedMode]);
-        }
-    });
-
-    document.getElementById('cancelButton').addEventListener('click', function () {
-        drawingManager.setDrawingMode(null);
-        points_geofence = [];
-    });
-
+    parametersGeofence();
     connectWebsockets();
 }
-
-let arrayDevices = [];
-let markers = [];
-let polylineSegments = [];
-let layers  = {};
-let map, infoWindow, markerSelected;
-let deviceSelected;
 
 async function connectWebsockets() {
     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -1046,14 +988,8 @@ function getColorForSpeed(speed) {
 document.addEventListener('DOMContentLoaded', function () {
     setInterval(checkAliveDevices, 30000);
     setInterval(checkAndRemoveOldPositions, 10000);
-    createTableGeofence();
-    // createTable();
-    // setInterval(checkAndRemoveOldPositions, 10000);
+    getGeofences();
 });
-
-
-
-
 
 function initLayers() {
     layerAis = new google.maps.KmlLayer({
@@ -1134,97 +1070,3 @@ checkboxes_layers.forEach(checkbox => {
         }
     });
 });
-
-
-/* *//////////////////////
-
-
-var points_geofence = [];
-
-function saveButton() {
-
-    let selectedMode = document.getElementById('select-geofence').value;
-    let area;
-    if (selectedMode === 'POLYGON') {
-        let polygon = points_geofence.map(point => `${point.lat} ${point.lng}`).join(', ');
-        area = `POLYGON ((${polygon}))`;
-    } else if (selectedMode === 'POLYLINE') {
-        let lineString = points_geofence.map(point => `${point.lat} ${point.lng}`).join(', ');
-        area = `LINESTRING (${lineString})`;
-    }
-
-
-    var formData = $("#formGeofence").serialize();
-    formData += "&area=" + area;
-    $.ajax({
-        url: geofence_url,
-        type: "POST",
-        data: formData,
-        success: function (response) {
-
-            if (dataTableSearchtrack2) {
-                dataTableSearchtrack2.destroy();
-                dataTableSearchtrack2 = null;
-            }
-            document.getElementById('name_geofence').value = '';
-            document.getElementById('name_description').value = '';
-            createTableGeofence();
-
-
-        },
-    });
-
-    points_geofence = [];
-}
-
-
-
-function wktToLatLngArray(wkt) {
-    const coordinates = wkt
-        .replace(/^LINESTRING \(|POLYGON \(\(/, '')
-        .replace(/\)\)$/, '')
-        .split(', ')
-        .map(coord => {
-            const [lat, lng] = coord.split(' ').map(parseFloat);
-            return { lat, lng };
-        });
-    return coordinates;
-}
-let polygonsGeofence = [];
-
-function drawGeofence(response) {
-
-    response.forEach(geocerca => {
-        const path = wktToLatLngArray(geocerca.area);
-
-        if (geocerca.area.startsWith('POLYGON')) {
-            const polygon =new google.maps.Polygon({
-                paths: path,
-                strokeColor: '#FF0000',
-                strokeOpacity: 0.8,
-                strokeWeight: 2,
-                fillColor: '#FF0000',
-                fillOpacity: 0.15,
-                map: map
-            });
-            polygonsGeofence.push(polygon);
-        } else if (geocerca.area.startsWith('LINESTRING')) {
-            const polygon =new google.maps.Polyline({
-                path: path,
-                strokeColor: '#0000FF',
-                strokeOpacity: 0.8,
-                strokeWeight: 2,
-                map: map
-            });
-            polygonsGeofence.push(polygon);
-        }
-    });
-
-}
-
-function clearGeofences() {
-    polygonsGeofence.forEach(polygon => {
-        polygon.setMap(null);
-    });
-    polygonsGeofence = [];
-}

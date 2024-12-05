@@ -146,3 +146,18 @@
     border-top-color: #0a0a0a;
     box-shadow: inset 0 1px #0a0a0a;
 }
+
+
+.dataTable-wrapper .dataTable-bottom .dataTable-pagination .dataTable-pagination-list .active a {
+    background: transparent;
+    background-image: linear-gradient(195deg, #1A73E8 0%, #1A73E8 100%);
+    box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.09), 0 2px 3px -1px rgba(0, 0, 0, 0.07);
+    color: #fff;
+    border: none;
+    border-radius: 50% !important;
+}
+
+.dataTable-wrapper .dataTable-bottom .dataTable-pagination .dataTable-pagination-list .active a:hover {
+    background-image: linear-gradient(195deg, #1A73E8 0%, #5d92d8 100%);
+}
+

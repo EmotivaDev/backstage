@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-
     protected $traccarHelper;
 
     public function __construct()
